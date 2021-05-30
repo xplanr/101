@@ -83,7 +83,7 @@ def coerce(string):
 
 def rs(l,r=0): 
   &#34;Round a list to `r` decimal places.&#34;
-  return [(f&#34;{x:.{r}f}&#34; if isinstace(x,(inf,float)) else str(x))
+  return [(f&#34;{x:.{r}f}&#34; if isinstance(x,(int,float)) else str(x))
           for x in l]</code></pre>
 </details>
 </section>
@@ -176,7 +176,7 @@ return an iterator for the lines.</p></div>
 </summary>
 <pre><code class="python">def rs(l,r=0): 
   &#34;Round a list to `r` decimal places.&#34;
-  return [(f&#34;{x:.{r}f}&#34; if isinstace(x,(inf,float)) else str(x))
+  return [(f&#34;{x:.{r}f}&#34; if isinstance(x,(int,float)) else str(x))
           for x in l]</code></pre>
 </details>
 </dd>

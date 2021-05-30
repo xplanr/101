@@ -41,11 +41,8 @@ from lib  import obj,rs
 import random,sys
 from row import Row
 
-import random
-from lib import rs
-
 def rbest(t,the,cols=None,loud=False):
-  clusters = []
+  rules=[]
   cols = cols or t.cols.x
   tiny = len(t.rows)**the.tiny // 1
   def recurse(rows, lvl=0):
@@ -53,9 +50,7 @@ def rbest(t,the,cols=None,loud=False):
      faraway = lambda r1    : t.far(r1, the, cols=cols, rows=rows)
      if loud: 
        print(f&#34;{&#39;|.. &#39; * lvl}{len(rows)}&#34;)
-     if len(rows)&lt;2*tiny: 
-       clusters.append(t.clone(rows))
-     else               : 
+     if len(rows)&gt;=2*tiny: 
        # find  two distant points, in  linear times
        any   = random.choice(rows)
        left  = faraway(any)
@@ -70,18 +65,35 @@ def rbest(t,the,cols=None,loud=False):
        # sort everyone along that line
        rows = sorted(rows, key=lambda row: row.fastmapx)
        mid  = len(rows)//2
-       rule  = sorted(br( t.clone(rows[:mid]), t.cline(rows[mid:]),the),
-                       reverse=True, key=lambda z:z[0])[0]
-       best = selected(rows, *rule)
-       recurse(best, lvl+1)  # recurse on the left-hand-side half
+       best, rest = (rows[:mid], rows[mid:]) if left &lt; right else (rows[mid:],rows[:mid])
+       maybe  = sorted(br( t.clone(best), t.clone(rest), the),
+                       reverse=True, key=lambda z:z[0])
+       if maybe:
+         rule = maybe[0][1]
+         if rule not in rules:
+           todo = list(selected(rows, *rule))
+           if len(todo) &lt;  len(rows):
+              rules.append(rule)
+              return recurse(todo, lvl+1)  # recurse on the left-hand-side half
+     return t.clone(rows), rules
+
 
   #-- main ----------
-  recurse(t.rows)
-  return clusters
+  return recurse(t.rows)
+
+def br(best,rest,the):
+  bins = best.bins(rest,the)
+  for (kl,col),b in  bins.items():
+    if kl==True:
+      b = b/len(best.rows)
+      r = bins.get((False,col),0) / len(rest.rows)
+      s= b**2/(b+r)
+      if b+r &gt; 0.1 and b&gt;r :
+          yield s,col
 
 def selected(rows, txt,col,span):
   def has(x,lo,hi):
-    return x==&#34;?&#34; or (x==lo if lo==hi else lo &lt;= x &lt; hi)
+    return x==&#34;?&#34; or (x==lo if lo==hi else lo &lt;= x &lt;= hi)
   for row in rows:
     if has(row.cells[col],*span):
       yield row</code></pre>
@@ -94,6 +106,26 @@ def selected(rows, txt,col,span):
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="rbest.br"><code class="name flex">
+<span>def <span class="ident">br</span></span>(<span>best, rest, the)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def br(best,rest,the):
+  bins = best.bins(rest,the)
+  for (kl,col),b in  bins.items():
+    if kl==True:
+      b = b/len(best.rows)
+      r = bins.get((False,col),0) / len(rest.rows)
+      s= b**2/(b+r)
+      if b+r &gt; 0.1 and b&gt;r :
+          yield s,col</code></pre>
+</details>
+</dd>
 <dt id="rbest.rbest"><code class="name flex">
 <span>def <span class="ident">rbest</span></span>(<span>t, the, cols=None, loud=False)</span>
 </code></dt>
@@ -104,7 +136,7 @@ def selected(rows, txt,col,span):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def rbest(t,the,cols=None,loud=False):
-  clusters = []
+  rules=[]
   cols = cols or t.cols.x
   tiny = len(t.rows)**the.tiny // 1
   def recurse(rows, lvl=0):
@@ -112,9 +144,7 @@ def selected(rows, txt,col,span):
      faraway = lambda r1    : t.far(r1, the, cols=cols, rows=rows)
      if loud: 
        print(f&#34;{&#39;|.. &#39; * lvl}{len(rows)}&#34;)
-     if len(rows)&lt;2*tiny: 
-       clusters.append(t.clone(rows))
-     else               : 
+     if len(rows)&gt;=2*tiny: 
        # find  two distant points, in  linear times
        any   = random.choice(rows)
        left  = faraway(any)
@@ -129,14 +159,21 @@ def selected(rows, txt,col,span):
        # sort everyone along that line
        rows = sorted(rows, key=lambda row: row.fastmapx)
        mid  = len(rows)//2
-       rule  = sorted(br( t.clone(rows[:mid]), t.cline(rows[mid:]),the),
-                       reverse=True, key=lambda z:z[0])[0]
-       best = selected(rows, *rule)
-       recurse(best, lvl+1)  # recurse on the left-hand-side half
+       best, rest = (rows[:mid], rows[mid:]) if left &lt; right else (rows[mid:],rows[:mid])
+       maybe  = sorted(br( t.clone(best), t.clone(rest), the),
+                       reverse=True, key=lambda z:z[0])
+       if maybe:
+         rule = maybe[0][1]
+         if rule not in rules:
+           todo = list(selected(rows, *rule))
+           if len(todo) &lt;  len(rows):
+              rules.append(rule)
+              return recurse(todo, lvl+1)  # recurse on the left-hand-side half
+     return t.clone(rows), rules
+
 
   #-- main ----------
-  recurse(t.rows)
-  return clusters</code></pre>
+  return recurse(t.rows)</code></pre>
 </details>
 </dd>
 <dt id="rbest.selected"><code class="name flex">
@@ -150,7 +187,7 @@ def selected(rows, txt,col,span):
 </summary>
 <pre><code class="python">def selected(rows, txt,col,span):
   def has(x,lo,hi):
-    return x==&#34;?&#34; or (x==lo if lo==hi else lo &lt;= x &lt; hi)
+    return x==&#34;?&#34; or (x==lo if lo==hi else lo &lt;= x &lt;= hi)
   for row in rows:
     if has(row.cells[col],*span):
       yield row</code></pre>
@@ -239,6 +276,7 @@ in columns.
 <ul id="index">
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="rbest.br" href="#rbest.br">br</a></code></li>
 <li><code><a title="rbest.rbest" href="#rbest.rbest">rbest</a></code></li>
 <li><code><a title="rbest.selected" href="#rbest.selected">selected</a></code></li>
 </ul>
