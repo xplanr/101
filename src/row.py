@@ -24,6 +24,7 @@ class Row(obj):
     for col in i._tab.cols.y:
       a   = col.norm(i.cells[col.at])
       b   = col.norm(j.cells[col.at])
+      print(a,b)
       s1 -= math.e**(col.w * (a - b) / n)
       s2 -= math.e**(col.w * (b - a) / n)
     return s1 / n < s2 / n

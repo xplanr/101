@@ -36,14 +36,29 @@ def rbest(t,the,cols=None,loud=False):
        # sort everyone along that line
        rows = sorted(rows, key=lambda row: row.fastmapx)
        mid  = len(rows)//2
-       rule  = sorted(br( t.clone(rows[:mid]), t.cline(rows[mid:]),the),
-                       reverse=True, key=lambda z:z[0])[0]
-       best = selected(rows, *rule)
-       recurse(best, lvl+1)  # recurse on the left-hand-side half
+       best, rest = (rows[:mid], rows[mid:]) if left < right else (rows[mid:],rows[:mid])
+       rules  = sorted(br( t.clone(best), t.clone(rest), the),
+                       reverse=True, key=lambda z:z[0])
+       [print("::",rule) for rule in rules]
+       rule=rules[0][1]
+       todo = list(selected(rows, *rule))
+       print(rule)
+       print(len(todo), len(t.rows))
+       recurse(todo, lvl+1)  # recurse on the left-hand-side half
 
   #-- main ----------
   recurse(t.rows)
   return clusters
+
+def br(best,rest,the):
+  bins = best.bins(rest,the)
+  for (kl,col),b in  bins.items():
+    if kl==True:
+      b = b/len(best.rows)
+      r = bins.get((False,col),0) / len(rest.rows)
+      s= b**2/(b+r)
+      if b>r :
+          yield s,col
 
 def selected(rows, txt,col,span):
   def has(x,lo,hi):

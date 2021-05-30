@@ -5,6 +5,7 @@ import about
 
 def eg1():
   the=about.defaults()
+  the.data="data/auto93.csv"
   t=Tab(file=the.data)
   print(the.data)
   for _ in  range(10):
