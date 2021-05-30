@@ -53,5 +53,5 @@ def coerce(string):
 
 def rs(l,r=0): 
   "Round a list to `r` decimal places."
-  return [(f"{x:.{r}f}" if isinstace(x,(inf,float)) else str(x))
+  return [(f"{x:.{r}f}" if isinstance(x,(int,float)) else str(x))
           for x in l]

@@ -4,9 +4,9 @@ import about,clusters
 from lib import rs
 import random
 
-def diveg(f="data/weather.csv",loud=False):
+def diveg(loud=False):
   the=about.defaults()
-  t=Tab(file=f)
+  t=Tab(file=the.data)
   if len(t.rows) > 2000: the.tiny=0.66
   all= sorted(clusters.div(t,the,cols=t.cols.x, loud=True))
   print([col.txt for col in t.cols.y])
@@ -18,5 +18,5 @@ def diveg(f="data/weather.csv",loud=False):
   print(round(random.random(),3),the)
 
 #diveg("data/auto93.csv")
-diveg("data/pom_dataset.csv")
+diveg()
 

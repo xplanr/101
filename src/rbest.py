@@ -7,11 +7,8 @@ from lib  import obj,rs
 import random,sys
 from row import Row
 
-import random
-from lib import rs
-
 def rbest(t,the,cols=None,loud=False):
-  clusters = []
+  rules=[]
   cols = cols or t.cols.x
   tiny = len(t.rows)**the.tiny // 1
   def recurse(rows, lvl=0):
@@ -19,9 +16,7 @@ def rbest(t,the,cols=None,loud=False):
      faraway = lambda r1    : t.far(r1, the, cols=cols, rows=rows)
      if loud: 
        print(f"{'|.. ' * lvl}{len(rows)}")
-     if len(rows)<2*tiny: 
-       clusters.append(t.clone(rows))
-     else               : 
+     if len(rows)>=2*tiny: 
        # find  two distant points, in  linear times
        any   = random.choice(rows)
        left  = faraway(any)
@@ -37,18 +32,20 @@ def rbest(t,the,cols=None,loud=False):
        rows = sorted(rows, key=lambda row: row.fastmapx)
        mid  = len(rows)//2
        best, rest = (rows[:mid], rows[mid:]) if left < right else (rows[mid:],rows[:mid])
-       rules  = sorted(br( t.clone(best), t.clone(rest), the),
+       maybe  = sorted(br( t.clone(best), t.clone(rest), the),
                        reverse=True, key=lambda z:z[0])
-       [print("::",rule) for rule in rules]
-       rule=rules[0][1]
-       todo = list(selected(rows, *rule))
-       print(rule)
-       print(len(todo), len(t.rows))
-       recurse(todo, lvl+1)  # recurse on the left-hand-side half
+       if maybe:
+         rule = maybe[0][1]
+         if rule not in rules:
+           todo = list(selected(rows, *rule))
+           if len(todo) <  len(rows):
+              rules.append(rule)
+              return recurse(todo, lvl+1)  # recurse on the left-hand-side half
+     return t.clone(rows), rules
+
 
   #-- main ----------
-  recurse(t.rows)
-  return clusters
+  return recurse(t.rows)
 
 def br(best,rest,the):
   bins = best.bins(rest,the)
@@ -57,12 +54,12 @@ def br(best,rest,the):
       b = b/len(best.rows)
       r = bins.get((False,col),0) / len(rest.rows)
       s= b**2/(b+r)
-      if b>r :
+      if b+r > 0.1 and b>r :
           yield s,col
 
 def selected(rows, txt,col,span):
   def has(x,lo,hi):
-    return x=="?" or (x==lo if lo==hi else lo <= x < hi)
+    return x=="?" or (x==lo if lo==hi else lo <= x <= hi)
   for row in rows:
     if has(row.cells[col],*span):
       yield row
