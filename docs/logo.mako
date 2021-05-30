@@ -1,16 +1,10 @@
 <center>
 <a href="http://github.com/xplanr/101"><img src="docs.png" width=500></a>
-<h1>xplanr/101:<br>data miners using/used by optimizers</h1>
+<h1>xplanr/101:<br>principles of explanation-oriented analytics</h1>
 <p><a href="https://github.com/xplanr/101/blob/master/UNLICENSE.md">&copy; 2021</a>, Tim Menzies<br>
 <a href="mailto:timm@ieee.org">timm@ieee.org</a><br> 
 <a href="http://github.com">http://github.com</a>
 </p>
-<p>
-"Give me the fruitful error any time, 
-full of seeds, bursting with its own 
-corrections. You can keep your sterile 
-truth for yourself."
--&nbsp;Vilfredo&nbsp;Pareto</p>
 <p>
 <img src="https://img.shields.io/badge/purpose-ai%20,%20se-blueviolet">
 <a href="https://github.com/xplanr/101/blob/master/UNLICENSE.md.md"><img  alt="License" src="https://img.shields.io/badge/license-mit-red"></a> 
