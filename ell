@@ -3,6 +3,6 @@ clear
 Ell=$(cd $( dirname "${BASH_SOURCE[0]}" ) && pwd )
 This="$(basename $(dirname $Ell)) $(basename $Ell)"
 
-tput bold; tput setaf 6; figlet -f larry3d -w 80 $This; tput sgr0
+tput bold; tput setaf 6; figlet -f doom -w 80 $This; tput sgr0
 
 Ell="$Ell" bash --init-file $Ell/etc/ellrc -i

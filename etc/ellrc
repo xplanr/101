@@ -32,6 +32,6 @@ here()    { cd $1; basename `pwd`; }
 PROMPT_COMMAND='echo -ne "❎ $(git branch 2>/dev/null | grep '^*' | colrm 1 2):";PS1="$(here ..)/$(here .):\!\e[m ▶ "'
 
 tput bold; tput setaf 241
-echo "Short cuts:"
+printf "\nShort cuts:\n"
 alias | sed 's/alias /  /'
 tput sgr0
