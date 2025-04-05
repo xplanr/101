@@ -54,7 +54,7 @@ def br(best,rest,the):
       b = b/len(best.rows)
       r = bins.get((False,col),0) / len(rest.rows)
       s= b**2/(b+r)
-      if b+r > 0.1 and b>r :
+      if  b>r :
           yield s,col
 
 def selected(rows, txt,col,span):
